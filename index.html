@@ -238,6 +238,44 @@ body{counter-reset:pg}
 #lb img{max-width:100%;max-height:88vh;object-fit:contain;box-shadow:0 10px 40px rgba(0,0,0,.6);border:4px solid #fff}
 #lb button{position:absolute;color:var(--gold2);font-size:34px;width:48px;height:48px;line-height:48px;font-family:'Playfair Display',serif}
 #lb .x{top:10px;right:10px}#lb .pv{left:4px;top:50%;transform:translateY(-50%)}#lb .nx{right:4px;top:50%;transform:translateY(-50%)}
+
+/* ===== Sổ lưu bút ===== */
+.gb-form{margin:6px 0 26px;padding:22px 18px 20px;background:rgba(255,250,246,.86);border:1px solid rgba(198,160,90,.55);box-shadow:0 8px 22px rgba(80,20,25,.12);position:relative}
+.gb-form label{display:block;font-family:'Playfair Display',serif;font-size:12px;letter-spacing:.18em;text-transform:uppercase;color:var(--ink2);margin:0 0 6px}
+.gb-form input,.gb-form textarea{width:100%;font:19px/1.5 'Cormorant Garamond',Georgia,serif;color:var(--ink);background:transparent;border:0;border-bottom:1px solid rgba(163,36,58,.35);padding:4px 2px 6px;margin-bottom:16px;outline:none;border-radius:0;-webkit-appearance:none}
+.gb-form textarea{min-height:110px;resize:vertical;background:repeating-linear-gradient(180deg,transparent 0 31px,rgba(206,160,160,.25) 31px 32px);line-height:32px;border-bottom:0}
+.gb-form input:focus,.gb-form textarea:focus{border-color:var(--red)}
+.gb-btn{display:block;margin:4px auto 0;padding:12px 30px;background:var(--red);color:var(--gold2);font:13px 'Playfair Display',serif;letter-spacing:.22em;text-transform:uppercase;border-radius:2px;box-shadow:inset 0 0 0 1px rgba(214,180,110,.5)}
+.gb-btn:disabled{opacity:.55}
+.gb-msg{text-align:center;font-family:'Dancing Script',cursive;font-size:20px;color:var(--inkred);min-height:26px;margin-top:10px}
+.gb-list{display:flex;flex-direction:column;gap:22px;margin-top:6px}
+.gb-note{position:relative;background:#fffaf3;padding:20px 18px 16px;box-shadow:0 6px 16px rgba(80,20,25,.13);transform:rotate(var(--r,0deg))}
+.gb-note::before{content:"";position:absolute;top:-10px;left:50%;width:64px;height:20px;transform:translateX(-50%) rotate(var(--tr,-3deg));background:rgba(236,190,188,.72)}
+.gb-note:nth-child(even)::before{background:rgba(232,216,186,.8)}
+.gb-note p{font-size:19px;line-height:30px;color:var(--ink);white-space:pre-line;word-break:break-word}
+.gb-note .who{margin-top:8px;text-align:right;font-family:'Dancing Script',cursive;font-size:21px;color:var(--inkred)}
+.gb-empty{text-align:center;font-family:'Dancing Script',cursive;font-size:20px;color:var(--ink2)}
+.gb-more[hidden]{display:none!important}
+.gb-more{display:block;margin:18px auto 0;font:italic 17px 'Cormorant Garamond',serif;color:var(--inkred);text-decoration:underline}
+/* ===== Admin ===== */
+#adm{position:fixed;inset:0;z-index:200;background:#f6eee2;overflow:auto;display:none;font-family:system-ui,-apple-system,'Segoe UI',sans-serif;color:#3b1a1f}
+#adm.on{display:block}
+#adm .w{max-width:720px;margin:0 auto;padding:22px 16px 60px}
+#adm h1{font:600 20px 'Playfair Display',serif;color:#8e1426;margin-bottom:4px}
+#adm h2{font:600 15px system-ui,sans-serif;margin:26px 0 10px;color:#5a0a15}
+#adm .box{background:#fff;border:1px solid #e7d7c6;border-radius:10px;padding:14px}
+#adm input,#adm select{font:15px system-ui,sans-serif;padding:10px 12px;border:1px solid #d9c6b2;border-radius:8px;width:100%;background:#fff;color:#3b1a1f}
+#adm .row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+#adm .row>*{flex:1 1 160px}
+#adm button{font:600 14px system-ui,sans-serif;padding:10px 16px;border-radius:8px;background:#8e1426;color:#fff;flex:0 0 auto}
+#adm button.ghost{background:#fff;color:#8e1426;border:1px solid #8e1426}
+#adm .link{margin-top:10px;padding:10px;background:#fbf6ee;border-radius:8px;word-break:break-all;font-size:14px;display:none}
+#adm .link.on{display:block}
+#adm table{width:100%;border-collapse:collapse;font-size:14px}
+#adm td{border-top:1px solid #efe3d6;padding:8px 6px;vertical-align:top}
+#adm td.t{color:#8a6a6e;white-space:nowrap;font-size:12px}
+#adm .x{background:none;color:#a91e33;padding:2px 6px;font-size:18px;line-height:1}
+#adm .muted{color:#8a6a6e;font-size:13px}
 </style>
 </head>
 <body class="locked">
@@ -505,6 +543,25 @@ body{counter-reset:pg}
     </div>
   </section>
 
+  <!-- Guestbook -->
+  <section class="page" id="luubut">
+    <div class="ribbon"><span>Lưu bút</span></div>
+    <div class="kicker rv">Viết cùng chúng mình</div>
+    <h2 class="ttl rv ink">Sổ lưu bút</h2>
+    <svg class="flour rv" viewBox="0 0 150 16" fill="none" stroke="currentColor" stroke-width="1"><path d="M2 8c20 0 30-6 45-6s20 12 28 12 13-12 28-12 25 6 45 6"/><circle cx="75" cy="8" r="2" fill="currentColor"/></svg>
+    <p class="note rv" style="margin:-4px 0 16px">Để lại vài dòng cho Trang &amp; Thống nhé</p>
+    <form class="gb-form rv" id="gbForm" autocomplete="off">
+      <label for="gbName">Tên của bạn</label>
+      <input id="gbName" maxlength="60" required placeholder="Ví dụ: Anh Huy">
+      <label for="gbWish">Lời chúc</label>
+      <textarea id="gbWish" maxlength="600" required placeholder="Viết lời chúc của bạn…"></textarea>
+      <button class="gb-btn" id="gbSend" type="submit">Gửi lời chúc</button>
+      <div class="gb-msg" id="gbMsg"></div>
+    </form>
+    <div class="gb-list" id="gbList"><p class="gb-empty">Đang mở sổ lưu bút…</p></div>
+    <button class="gb-more" id="gbMore" type="button" hidden>Xem thêm lời chúc</button>
+  </section>
+
   <!-- Last page -->
   <section class="page center">
     <div class="kicker rv">Từ bạn học đến bạn đời</div>
@@ -522,6 +579,21 @@ body{counter-reset:pg}
   </footer>
 </main>
 
+<div id="adm"><div class="w">
+  <h1>Quản lý thiệp Trang &amp; Thống</h1>
+  <p class="muted" id="admHint">Nhập mật khẩu để vào.</p>
+  <div id="admGate" class="box" style="margin-top:12px"><div class="row"><input id="admPw" type="password" placeholder="Mật khẩu"><button id="admIn">Vào</button></div></div>
+  <div id="admApp" hidden>
+    <h2>Tạo link mời theo tên khách</h2>
+    <div class="box">
+      <div class="row"><input id="admGuest" placeholder="Tên khách, ví dụ: Gia đình chú Ba"><select id="admCa"><option value="">Tiệc 27/11 · 10:30</option><option value="26">Tiệc 26/11 · 18:00</option></select><button id="admMk">Tạo link</button></div>
+      <div class="link" id="admLink"><span id="admLinkT"></span><div class="row" style="margin-top:8px"><button id="admCopy" class="ghost">Sao chép</button></div></div>
+    </div>
+    <h2>Lời chúc trong sổ lưu bút <span id="admCount" class="muted"></span></h2>
+    <div class="box"><div class="row" style="margin-bottom:8px"><button id="admCsv" class="ghost">Tải file Excel (CSV)</button><button id="admOut" class="ghost">Thoát</button></div>
+      <table><tbody id="admRows"><tr><td class="muted">Đang tải…</td></tr></tbody></table></div>
+  </div>
+</div></div>
 <button id="music" aria-label="Bật tắt nhạc"></button>
 <audio id="bgm" loop preload="auto" src="nhac.mp3"></audio>
 <div id="lb"><button class="x" aria-label="Đóng">×</button><button class="pv" aria-label="Ảnh trước">‹</button><img alt=""><button class="nx" aria-label="Ảnh sau">›</button></div>
@@ -613,6 +685,97 @@ body{counter-reset:pg}
   var sx=0;lb.addEventListener('touchstart',function(e){sx=e.touches[0].clientX},{passive:true});
   lb.addEventListener('touchend',function(e){var dx=e.changedTouches[0].clientX-sx;if(Math.abs(dx)>50)show(cur+(dx<0?1:-1))});
 })();
+</script>
+<script type="module">
+let initializeApp, getFirestore, collection, addDoc, deleteDoc, doc, query, orderBy, onSnapshot, serverTimestamp, FB_OK = true;
+try {
+  ({ initializeApp } = await import("https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js"));
+  ({ getFirestore, collection, addDoc, deleteDoc, doc, query, orderBy, onSnapshot, serverTimestamp } = await import("https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js"));
+} catch (e) { FB_OK = false; }
+const app = FB_OK && initializeApp({
+  apiKey: "AIzaSyDKojhw5-SFWukGSN_oSjw5vxJngrfIogo",
+  authDomain: "vo-iu-dino-848d2.firebaseapp.com",
+  projectId: "vo-iu-dino-848d2",
+  storageBucket: "vo-iu-dino-848d2.firebasestorage.app",
+  messagingSenderId: "879023470388",
+  appId: "1:879023470388:web:ecc9128f6f280b26249761"
+});
+const db = FB_OK ? getFirestore(app) : null;
+const COL = "luubut_trangthong";
+const ADMIN_PASSWORD = "trangthong2026";
+const $ = id => document.getElementById(id);
+const Q = new URLSearchParams(location.search);
+const guest = (Q.get('khach') || '').trim();
+if (guest) $('gbName').value = guest;
+
+let ALL = [], shown = 6;
+const fmt = ts => { if (!ts || !ts.toDate) return ''; const d = ts.toDate(); return d.toLocaleDateString('vi-VN') + ' ' + d.toLocaleTimeString('vi-VN', {hour:'2-digit', minute:'2-digit'}); };
+function render(){
+  const L = $('gbList'); L.innerHTML = '';
+  if (!ALL.length){ const p = document.createElement('p'); p.className = 'gb-empty'; p.textContent = 'Hãy là người đầu tiên viết vào sổ lưu bút nhé!'; L.appendChild(p); $('gbMore').hidden = true; return; }
+  ALL.slice(0, shown).forEach((w, i) => {
+    const n = document.createElement('div'); n.className = 'gb-note';
+    n.style.setProperty('--r', (i % 2 ? 1.2 : -1.2) + 'deg'); n.style.setProperty('--tr', (i % 2 ? 4 : -3) + 'deg');
+    const p = document.createElement('p'); p.textContent = w.wish;
+    const who = document.createElement('div'); who.className = 'who'; who.textContent = '— ' + w.name;
+    n.append(p, who); L.appendChild(n);
+  });
+  $('gbMore').hidden = ALL.length <= shown;
+}
+function renderAdmin(){
+  $('admCount').textContent = '(' + ALL.length + ')';
+  const tb = $('admRows'); tb.innerHTML = '';
+  if (!ALL.length){ tb.innerHTML = '<tr><td class="muted">Chưa có lời chúc nào.</td></tr>'; return; }
+  ALL.forEach(w => {
+    const tr = document.createElement('tr');
+    const a = document.createElement('td'); a.innerHTML = '<b></b><div></div>'; a.querySelector('b').textContent = w.name; a.querySelector('div').textContent = w.wish;
+    const t = document.createElement('td'); t.className = 't'; t.textContent = fmt(w.createdAt);
+    const x = document.createElement('td'); const b = document.createElement('button'); b.className = 'x'; b.textContent = '×'; b.title = 'Xoá';
+    b.onclick = async () => { if (confirm('Xoá lời chúc của ' + w.name + '?')) await deleteDoc(doc(db, COL, w.id)); };
+    x.appendChild(b); tr.append(a, t, x); tb.appendChild(tr);
+  });
+}
+if (!FB_OK) document.getElementById('gbList').innerHTML = '<p class="gb-empty">Chưa tải được sổ lưu bút, bạn thử tải lại trang nhé.</p>';
+else onSnapshot(query(collection(db, COL), orderBy('createdAt', 'desc')), snap => {
+  ALL = []; snap.forEach(d => { const v = d.data(); if (v.wish) ALL.push({ id: d.id, name: v.name || 'Ẩn danh', wish: v.wish, invitedAs: v.invitedAs || '', createdAt: v.createdAt }); });
+  render(); if ($('adm').classList.contains('on')) renderAdmin();
+}, () => { $('gbList').innerHTML = '<p class="gb-empty">Chưa tải được sổ lưu bút, bạn thử tải lại trang nhé.</p>'; });
+$('gbMore').onclick = () => { shown += 6; render(); };
+$('gbForm').addEventListener('submit', async e => {
+  e.preventDefault();
+  const name = $('gbName').value.trim().slice(0, 60), wish = $('gbWish').value.trim().slice(0, 600);
+  if (!name || !wish) return;
+  $('gbSend').disabled = true; $('gbMsg').textContent = 'Đang gửi…';
+  try {
+    if (!FB_OK) throw new Error('offline');
+    await addDoc(collection(db, COL), { name, wish, invitedAs: guest, createdAt: serverTimestamp() });
+    $('gbWish').value = ''; $('gbMsg').textContent = 'Cảm ơn bạn, lời chúc đã vào sổ rồi ♡';
+  } catch (err) { $('gbMsg').textContent = 'Gửi chưa được, bạn thử lại giúp mình nhé.'; }
+  $('gbSend').disabled = false;
+});
+// ---- Admin: mở bằng #admin ----
+function route(){
+  const on = location.hash.toLowerCase() === '#admin';
+  $('adm').classList.toggle('on', on);
+  if (on){ let ok = false; try { ok = sessionStorage.getItem('tt_admin') === '1'; } catch(e){} if (ok) unlock(); }
+}
+function unlock(){ $('admGate').hidden = true; $('admHint').hidden = true; $('admApp').hidden = false; renderAdmin(); }
+$('admIn').onclick = () => { if ($('admPw').value === ADMIN_PASSWORD){ try { sessionStorage.setItem('tt_admin','1'); } catch(e){} unlock(); } else alert('Sai mật khẩu.'); };
+$('admPw').addEventListener('keydown', e => { if (e.key === 'Enter') $('admIn').click(); });
+$('admOut').onclick = () => { location.hash = ''; };
+$('admMk').onclick = () => {
+  const n = $('admGuest').value.trim(); if (!n){ alert('Nhập tên khách.'); return; }
+  const p = new URLSearchParams(); p.set('khach', n); if ($('admCa').value) p.set('ca', $('admCa').value);
+  const link = location.origin + location.pathname + '?' + p.toString().replace(/\+/g, '%20');
+  $('admLinkT').textContent = link; $('admLink').classList.add('on');
+  $('admCopy').onclick = function(){ const b = this; (navigator.clipboard ? navigator.clipboard.writeText(link) : Promise.reject()).then(() => { b.textContent = 'Đã chép ✓'; setTimeout(() => b.textContent = 'Sao chép', 1500); }).catch(() => prompt('Chép link:', link)); };
+};
+$('admCsv').onclick = () => {
+  const rows = [['Tên', 'Lời chúc', 'Tên trên link mời', 'Thời gian']].concat(ALL.map(w => [w.name, w.wish, w.invitedAs, fmt(w.createdAt)]));
+  const csv = '﻿' + rows.map(r => r.map(c => '"' + String(c).replace(/"/g, '""') + '"').join(',')).join('\n');
+  const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([csv], {type: 'text/csv;charset=utf-8'})); a.download = 'luu-but-trang-thong.csv'; document.body.appendChild(a); a.click(); a.remove();
+};
+addEventListener('hashchange', route); route();
 </script>
 </body>
 </html>
