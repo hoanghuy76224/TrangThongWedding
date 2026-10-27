@@ -749,6 +749,11 @@ body{counter-reset:pg}
     document.getElementById('sAddr').innerHTML='Ấp Sơn Thái, Xã Hòn Đất<br>Tỉnh An Giang';
     document.getElementById('sHost').textContent='VŨ VĂN ĐIỀU · NGUYỄN THỊ TÂM';
   }
+  if(Q.get('ca')==='28'){
+    document.querySelectorAll('.names,.tn,.cv-names,.c-names,.note').forEach(function(e){
+      e.innerHTML=e.innerHTML.replace(/Thùy Trang (<i>)?&amp;(<\/i>)? Quốc Thống/,'Quốc Thống $1&amp;$2 Thùy Trang').replace(/Trang &amp; Thống/,'Thống &amp; Trang');});
+    document.title='Quốc Thống & Thùy Trang · Nhật ký mười năm';
+  }
   document.getElementById('sDow').textContent=S.dow;
   document.getElementById('sDay').textContent=S.day;
   document.getElementById('sTime').textContent=S.time;
