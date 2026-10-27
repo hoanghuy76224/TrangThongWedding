@@ -585,19 +585,19 @@ body{counter-reset:pg}
     <div class="kicker rv center" style="margin-bottom:46px">Trang nhật ký tiếp theo, viết cùng bạn</div>
     <div class="card rv">
       <div class="seal">T&amp;T</div>
-      <div class="fam">
+      <div class="fam" id="sFam">
         <div><h4>NHÀ GÁI</h4><p>Ông <b>MAI THANH NAM</b>Bà <b>TRẦN KIM CHÍ</b></p><p class="addr">Ấp Võ Thành Nguyên, Xã Ngọc Chúc, Tỉnh An Giang</p></div>
         <div><h4>NHÀ TRAI</h4><p>Ông <b>VŨ VĂN ĐIỀU</b>Bà <b>NGUYỄN THỊ TÂM</b></p><p class="addr">Ấp Sơn Thái, Xã Hòn Đất, Tỉnh An Giang</p></div>
       </div>
-      <p class="announce">Trân trọng báo tin<b>LỄ VU QUY</b>của con chúng tôi</p>
-      <div class="couple">
+      <p class="announce">Trân trọng báo tin<b id="sLe">LỄ VU QUY</b>của con chúng tôi</p>
+      <div class="couple" id="sCouple">
         <div><span class="n">Mai Thùy Trang</span><span class="r">Trưởng nữ</span></div>
         <span class="amp">&amp;</span>
         <div><span class="n">Vũ Quốc Thống</span><span class="r">Út nam</span></div>
       </div>
       <div class="rule"></div>
       <p class="cap">Hôn lễ được cử hành tại tư gia</p>
-      <p class="small" style="margin-top:4px">Vào lúc 5h00 · Thứ Bảy</p>
+      <p class="small" style="margin-top:4px" id="sLeT">Vào lúc 5h00 · Thứ Bảy</p>
       <p class="bigdate">28 | 11 | 2026</p>
       <p class="small" style="font-style:italic">(Nhằm ngày 20 tháng 10 năm Bính Ngọ)</p>
       <div class="rule"></div>
@@ -605,7 +605,7 @@ body{counter-reset:pg}
       <p class="venue g-name" style="font-size:34px">Quý Gia Đình</p>
       <p class="small" id="sInv">Đến tham dự buổi tiệc chung vui cùng gia đình chúng tôi tại</p>
       <p class="venue">Tư Gia</p>
-      <p class="small">Ấp Võ Thành Nguyên, Xã Ngọc Chúc<br>Tỉnh An Giang</p>
+      <p class="small" id="sAddr">Ấp Võ Thành Nguyên, Xã Ngọc Chúc<br>Tỉnh An Giang</p>
       <div class="datebox">
         <div class="side">THÁNG 11<br>NĂM 2026</div>
         <div class="mid"><div class="dow" id="sDow">THỨ SÁU</div><div class="d" id="sDay">27</div><div class="t">VÀO LÚC <span id="sTime">10:30</span></div></div>
@@ -614,7 +614,7 @@ body{counter-reset:pg}
       <div class="cal"><div class="hd">THÁNG 11 · 2026</div><div class="g" id="cal"></div></div>
       <div class="count" id="count"></div>
       <p class="small" style="margin-top:18px">Sự hiện diện của <span class="g-name">Quý Gia Đình</span><br>là niềm vinh hạnh cho gia đình chúng tôi.</p>
-      <div class="host" style="margin-top:20px"><p class="cap">Chủ hôn</p><p class="hn">MAI THANH NAM · TRẦN KIM CHÍ</p></div>
+      <div class="host" style="margin-top:20px"><p class="cap">Chủ hôn</p><p class="hn" id="sHost">MAI THANH NAM · TRẦN KIM CHÍ</p></div>
       <p class="kinh">Kính mời!</p>
     </div>
   </section>
@@ -680,7 +680,7 @@ body{counter-reset:pg}
   <div id="admApp" hidden>
     <h2>Tạo link mời theo tên khách</h2>
     <div class="box">
-      <div class="row"><input id="admGuest" placeholder="Tên khách, ví dụ: Gia đình chú Ba"><select id="admCa"><option value="">Tiệc cưới · 27/11 · 10:30</option><option value="26">Tiệc thân mật · 26/11 · 18:00</option></select><button id="admMk">Tạo link</button></div>
+      <div class="row"><input id="admGuest" placeholder="Tên khách, ví dụ: Gia đình chú Ba"><select id="admCa"><option value="">Tiệc cưới · 27/11 · 10:30</option><option value="26">Tiệc thân mật · 26/11 · 18:00</option><option value="28">Tiệc nhà trai · 28/11 · 10:30</option></select><button id="admMk">Tạo link</button></div>
       <div class="link" id="admLink"><span id="admLinkT"></span><div class="row" style="margin-top:8px"><button id="admCopy" class="ghost">Sao chép</button></div></div>
     </div>
     <h2>Xác nhận tham dự <span id="rsSum" class="muted"></span></h2>
@@ -735,9 +735,20 @@ body{counter-reset:pg}
 
   // Hai khung giờ: mặc định 10:30 ngày 27/11; ?ca=26 -> 18:00 ngày 26/11
   if(/^\/tiecthanmat/i.test(location.pathname))Q.set('ca','26');
+  if(/^\/nhatrai/i.test(location.pathname))Q.set('ca','28');
   var S=Q.get('ca')==='26'
     ?{dow:'THỨ NĂM',day:26,time:'18:00',lunar:'18.10',iso:'2026-11-26T18:00:00+07:00'}
+    :Q.get('ca')==='28'
+    ?{dow:'THỨ BẢY',day:28,time:'10:30',lunar:'20.10',iso:'2026-11-28T10:30:00+07:00'}
     :{dow:'THỨ SÁU',day:27,time:'10:30',lunar:'19.10',iso:'2026-11-27T10:30:00+07:00'};
+  if(Q.get('ca')==='28'){
+    document.getElementById('sLe').textContent='LỄ TÂN HÔN';
+    var cp=document.getElementById('sCouple'),cd=cp.children;cp.insertBefore(cd[2],cd[0]);cp.appendChild(cd[1]);
+    var fm=document.getElementById('sFam');fm.insertBefore(fm.children[1],fm.children[0]);
+    document.getElementById('sLeT').textContent='Thứ Bảy';
+    document.getElementById('sAddr').innerHTML='Ấp Sơn Thái, Xã Hòn Đất<br>Tỉnh An Giang';
+    document.getElementById('sHost').textContent='VŨ VĂN ĐIỀU · NGUYỄN THỊ TÂM';
+  }
   document.getElementById('sDow').textContent=S.dow;
   document.getElementById('sDay').textContent=S.day;
   document.getElementById('sTime').textContent=S.time;
@@ -927,7 +938,7 @@ $('admOut').onclick = () => { location.hash = ''; };
 $('admMk').onclick = () => {
   const n = $('admGuest').value.trim(); if (!n){ alert('Nhập tên khách.'); return; }
   const p = new URLSearchParams(); p.set('khach', n);
-  const link = location.origin + ($('admCa').value === '26' ? '/tiecthanmat' : '/') + '?' + p.toString().replace(/\+/g, '%20');
+  const link = location.origin + ({'26':'/tiecthanmat','28':'/nhatrai'}[$('admCa').value] || '/') + '?' + p.toString().replace(/\+/g, '%20');
   $('admLinkT').textContent = link; $('admLink').classList.add('on');
   $('admCopy').onclick = function(){ const b = this; (navigator.clipboard ? navigator.clipboard.writeText(link) : Promise.reject()).then(() => { b.textContent = 'Đã chép ✓'; setTimeout(() => b.textContent = 'Sao chép', 1500); }).catch(() => prompt('Chép link:', link)); };
 };
@@ -939,8 +950,8 @@ $('admCsv').onclick = () => {
 
 // ---- RSVP ----
 const RCOL = "rsvp_trangthong";
-const CA = (Q.get('ca') === '26' || /^\/tiecthanmat/i.test(location.pathname)) ? '26' : '27';
-const PARTY = { '26': 'Tiệc thân mật · Thứ Năm 26/11 · 18:00', '27': 'Tiệc cưới · Thứ Sáu 27/11 · 10:30' };
+const CA = (Q.get('ca') === '26' || /^\/tiecthanmat/i.test(location.pathname)) ? '26' : (Q.get('ca') === '28' || /^\/nhatrai/i.test(location.pathname)) ? '28' : '27';
+const PARTY = { '26': 'Tiệc thân mật · Thứ Năm 26/11 · 18:00', '27': 'Tiệc cưới · Thứ Sáu 27/11 · 10:30', '28': 'Tiệc nhà trai · Thứ Bảy 28/11 · 10:30' };
 $('rsParty').textContent = PARTY[CA];
 if (guest) $('rsName').value = guest;
 try { const s = JSON.parse(localStorage.getItem('tt_rsvp') || 'null'); if (s) $('rsMsg').textContent = 'Bạn đã gửi xác nhận rồi, gửi lại sẽ cập nhật cho chúng mình nhé.'; } catch(e){}
@@ -959,14 +970,14 @@ $('rsForm').addEventListener('submit', async e => {
 });
 let RS = [];
 function renderRs(){
-  const sum = { '26': 0, '27': 0 }, no = { '26': 0, '27': 0 };
+  const sum = { '26': 0, '27': 0, '28': 0 }, no = { '26': 0, '27': 0, '28': 0 };
   RS.forEach(r => { if (r.attend === 'co') sum[r.ca] = (sum[r.ca] || 0) + 1; else no[r.ca] = (no[r.ca] || 0) + 1; });
-  $('rsSum').textContent = '· Tiệc thân mật 26/11: ' + sum['26'] + ' đến, ' + no['26'] + ' không đến · Tiệc cưới 27/11: ' + sum['27'] + ' đến, ' + no['27'] + ' không đến';
+  $('rsSum').textContent = '· Thân mật 26/11: ' + sum['26'] + ' đến, ' + no['26'] + ' không · Tiệc cưới 27/11: ' + sum['27'] + ' đến, ' + no['27'] + ' không · Nhà trai 28/11: ' + sum['28'] + ' đến, ' + no['28'] + ' không';
   const tb = $('rsRows'); tb.innerHTML = '';
   if (!RS.length){ tb.innerHTML = '<tr><td class="muted">Chưa có ai xác nhận.</td></tr>'; return; }
   RS.forEach(r => {
     const tr = document.createElement('tr');
-    const a = document.createElement('td'); a.innerHTML = '<b></b><div></div>'; a.querySelector('b').textContent = r.name; a.querySelector('div').textContent = (r.attend === 'co' ? 'Đến' : 'Không đến') + ' · ' + (r.ca === '26' ? 'Tiệc thân mật 26/11' : 'Tiệc cưới 27/11') + (r.note ? ' · ' + r.note : '');
+    const a = document.createElement('td'); a.innerHTML = '<b></b><div></div>'; a.querySelector('b').textContent = r.name; a.querySelector('div').textContent = (r.attend === 'co' ? 'Đến' : 'Không đến') + ' · ' + (r.ca === '26' ? 'Tiệc thân mật 26/11' : r.ca === '28' ? 'Tiệc nhà trai 28/11' : 'Tiệc cưới 27/11') + (r.note ? ' · ' + r.note : '');
     const t2 = document.createElement('td'); t2.className = 't'; t2.textContent = fmt(r.createdAt);
     const x = document.createElement('td'); const b = document.createElement('button'); b.className = 'x'; b.textContent = '×'; b.title = 'Xoá';
     b.onclick = async () => { if (confirm('Xoá xác nhận của ' + r.name + '?')) await deleteDoc(doc(db, RCOL, r.id)); };
@@ -975,7 +986,7 @@ function renderRs(){
 }
 if (FB_OK) onSnapshot(query(collection(db, RCOL), orderBy('createdAt', 'desc')), snap => { RS = []; snap.forEach(d => RS.push({ id: d.id, ...d.data() })); if ($('adm').classList.contains('on')) renderRs(); }, () => {});
 $('rsCsv').onclick = () => {
-  const rows = [['Tên', 'Tham dự', 'Tiệc', 'Lời nhắn', 'Tên trên link mời', 'Thời gian']].concat(RS.map(r => [r.name, r.attend === 'co' ? 'Đến' : 'Không đến', r.ca === '26' ? 'Tiệc thân mật 26/11 18:00' : 'Tiệc cưới 27/11 10:30', r.note || '', r.invitedAs || '', fmt(r.createdAt)]));
+  const rows = [['Tên', 'Tham dự', 'Tiệc', 'Lời nhắn', 'Tên trên link mời', 'Thời gian']].concat(RS.map(r => [r.name, r.attend === 'co' ? 'Đến' : 'Không đến', r.ca === '26' ? 'Tiệc thân mật 26/11 18:00' : r.ca === '28' ? 'Tiệc nhà trai 28/11 10:30' : 'Tiệc cưới 27/11 10:30', r.note || '', r.invitedAs || '', fmt(r.createdAt)]));
   const csv = '﻿' + rows.map(r => r.map(c => '"' + String(c).replace(/"/g, '""') + '"').join(',')).join('\n');
   const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([csv], {type: 'text/csv;charset=utf-8'})); a.download = 'xac-nhan-tham-du-trang-thong.csv'; document.body.appendChild(a); a.click(); a.remove();
 };
