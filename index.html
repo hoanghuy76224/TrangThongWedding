@@ -954,7 +954,7 @@ $('admMk').onclick = () => {
   const link = location.origin + ({'26':'/tiecthanmat','28':'/nhatrai'}[$('admCa').value] || '/') + '?' + p.toString().replace(/\+/g, '%20');
   $('admLinkT').textContent = link; $('admLink').classList.add('on');
   const ca = $('admCa').value || '27';
-  if (FB_OK && !LK.some(l => l.name.toLowerCase() === n.toLowerCase() && l.ca === ca)) addDoc(collection(db, LCOL), { name: n.slice(0, 100), ca, link, createdAt: serverTimestamp() }).catch(() => alert('Chưa lưu được link vào danh sách, link vẫn dùng bình thường.'));
+  if (FB_OK && !LK.some(l => l.name.toLowerCase() === n.toLowerCase() && l.ca === ca)) addDoc(collection(db, RCOL), { name: n.slice(0, 60), attend: 'khong', count: 0, ca, note: '#link ' + link, invitedAs: n.slice(0, 100), createdAt: serverTimestamp() }).catch(() => alert('Chưa lưu được link vào danh sách, link vẫn dùng bình thường.'));
   $('admCopy').onclick = function(){ const b = this; (navigator.clipboard ? navigator.clipboard.writeText(link) : Promise.reject()).then(() => { b.textContent = 'Đã chép ✓'; setTimeout(() => b.textContent = 'Sao chép', 1500); }).catch(() => prompt('Chép link:', link)); };
 };
 $('admCsv').onclick = () => {
@@ -965,6 +965,7 @@ $('admCsv').onclick = () => {
 
 // ---- RSVP ----
 const RCOL = "rsvp_trangthong";
+let LK = [], VW = [];
 const CA = (Q.get('ca') === '26' || /^\/tiecthanmat/i.test(location.pathname)) ? '26' : (Q.get('ca') === '28' || /^\/nhatrai/i.test(location.pathname)) ? '28' : '27';
 const PARTY = { '26': 'Tiệc thân mật · Thứ Năm 26/11 · 18:00', '27': 'Tiệc cưới · Thứ Sáu 27/11 · 10:30', '28': 'Tiệc nhà trai · Thứ Bảy 28/11 · 10:30' };
 $('rsParty').textContent = PARTY[CA];
@@ -1000,15 +1001,13 @@ function renderRs(){
     x.appendChild(b); tr.append(a, t2, x); tb.appendChild(tr);
   });
 }
-if (FB_OK) onSnapshot(query(collection(db, RCOL), orderBy('createdAt', 'desc')), snap => { RS = []; snap.forEach(d => RS.push({ id: d.id, ...d.data() })); if ($('adm').classList.contains('on')) { renderRs(); if (typeof renderLk === 'function') renderLk(); } }, () => {});
+if (FB_OK) onSnapshot(query(collection(db, RCOL), orderBy('createdAt', 'desc')), snap => { RS = []; LK = []; VW = []; snap.forEach(d => { const v = { id: d.id, ...d.data() }, nt = String(v.note || ''); if (nt.startsWith('#link ')) LK.push({ id: v.id, name: v.invitedAs || v.name, ca: v.ca || '27', link: nt.slice(6), createdAt: v.createdAt }); else if (nt === '#view') VW.push(v); else RS.push(v); }); if ($('adm').classList.contains('on')) { renderRs(); if (typeof renderLk === 'function') renderLk(); } }, () => {});
 // ---- Link đã tạo + lượt mở thiệp ----
-const LCOL = "links_trangthong", VCOL = "views_trangthong";
-let LK = [], VW = [];
 const norm = x => String(x || '').trim().toLowerCase();
 const CALBL = { '26': 'Tiệc thân mật 26/11', '27': 'Tiệc cưới 27/11', '28': 'Tiệc nhà trai 28/11' };
 if (FB_OK && guest) {
   let skip = false; try { skip = sessionStorage.getItem('tt_admin') === '1' || sessionStorage.getItem('tt_view') === norm(guest) + CA; } catch(e){}
-  if (!skip && location.hash.toLowerCase() !== '#admin') addDoc(collection(db, VCOL), { invitedAs: guest.slice(0, 100), ca: CA, createdAt: serverTimestamp() }).then(() => { try { sessionStorage.setItem('tt_view', norm(guest) + CA); } catch(e){} }).catch(() => {});
+  if (!skip && location.hash.toLowerCase() !== '#admin') addDoc(collection(db, RCOL), { name: guest.slice(0, 60), attend: 'khong', count: 0, ca: CA, note: '#view', invitedAs: guest.slice(0, 100), createdAt: serverTimestamp() }).then(() => { try { sessionStorage.setItem('tt_view', norm(guest) + CA); } catch(e){} }).catch(() => {});
 }
 function renderLk(){
   let nRs = 0, nVw = 0;
@@ -1029,16 +1028,12 @@ function renderLk(){
     const cp = document.createElement('button'); cp.className = 'x'; cp.textContent = '⧉'; cp.title = 'Chép link';
     cp.onclick = () => { (navigator.clipboard ? navigator.clipboard.writeText(l.link) : Promise.reject()).then(() => { cp.textContent = '✓'; setTimeout(() => cp.textContent = '⧉', 1500); }).catch(() => prompt('Chép link:', l.link)); };
     const b = document.createElement('button'); b.className = 'x'; b.textContent = '×'; b.title = 'Xoá';
-    b.onclick = async () => { if (confirm('Xoá link của ' + l.name + ' khỏi danh sách?')) await deleteDoc(doc(db, LCOL, l.id)); };
+    b.onclick = async () => { if (confirm('Xoá link của ' + l.name + ' khỏi danh sách?')) await deleteDoc(doc(db, RCOL, l.id)); };
     c.append(cp, b); tr.append(a, t, c); tb.appendChild(tr);
   });
   $('lkSum').textContent = '· ' + LK.length + ' link · ' + nRs + ' đã xác nhận · ' + nVw + ' đã mở';
 }
 const admOn = () => $('adm').classList.contains('on') && !$('admApp').hidden;
-if (FB_OK) {
-  onSnapshot(query(collection(db, LCOL), orderBy('createdAt', 'desc')), snap => { LK = []; snap.forEach(d => LK.push({ id: d.id, ...d.data() })); if (admOn()) renderLk(); }, () => { $('lkRows').innerHTML = '<tr><td class="muted">Chưa tải được danh sách link.</td></tr>'; });
-  onSnapshot(query(collection(db, VCOL), orderBy('createdAt', 'desc')), snap => { VW = []; snap.forEach(d => VW.push(d.data())); if (admOn()) renderLk(); }, () => {});
-}
 $('rsCsv').onclick = () => {
   const rows = [['Tên', 'Tham dự', 'Tiệc', 'Lời nhắn', 'Tên trên link mời', 'Thời gian']].concat(RS.map(r => [r.name, r.attend === 'co' ? 'Đến' : 'Không đến', r.ca === '26' ? 'Tiệc thân mật 26/11 18:00' : r.ca === '28' ? 'Tiệc nhà trai 28/11 10:30' : 'Tiệc cưới 27/11 10:30', r.note || '', r.invitedAs || '', fmt(r.createdAt)]));
   const csv = '﻿' + rows.map(r => r.map(c => '"' + String(c).replace(/"/g, '""') + '"').join(',')).join('\n');
