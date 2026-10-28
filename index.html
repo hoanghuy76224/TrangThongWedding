@@ -686,6 +686,8 @@ body{counter-reset:pg}
       <div class="row"><input id="admGuest" placeholder="Tên khách, ví dụ: Gia đình chú Ba"><select id="admCa"><option value="">Tiệc cưới · 27/11 · 10:30</option><option value="26">Tiệc thân mật · 26/11 · 18:00</option><option value="28">Tiệc nhà trai · 28/11 · 10:30</option></select><button id="admMk">Tạo link</button></div>
       <div class="link" id="admLink"><span id="admLinkT"></span><div class="row" style="margin-top:8px"><button id="admCopy" class="ghost">Sao chép</button></div></div>
     </div>
+    <h2>Link đã tạo <span id="lkSum" class="muted"></span></h2>
+    <div class="box"><table><tbody id="lkRows"><tr><td class="muted">Đang tải…</td></tr></tbody></table></div>
     <h2>Xác nhận tham dự <span id="rsSum" class="muted"></span></h2>
     <div class="box"><div class="row" style="margin-bottom:8px"><button id="rsCsv" class="ghost">Tải file Excel (CSV)</button></div>
       <table><tbody id="rsRows"><tr><td class="muted">Đang tải…</td></tr></tbody></table></div>
@@ -942,7 +944,7 @@ function route(){
   $('adm').classList.toggle('on', on);
   if (on){ let ok = false; try { ok = sessionStorage.getItem('tt_admin') === '1'; } catch(e){} if (ok) unlock(); }
 }
-function unlock(){ $('admGate').hidden = true; $('admHint').hidden = true; $('admApp').hidden = false; renderAdmin(); if (typeof renderRs === 'function') renderRs(); }
+function unlock(){ $('admGate').hidden = true; $('admHint').hidden = true; $('admApp').hidden = false; renderAdmin(); if (typeof renderRs === 'function') renderRs(); if (typeof renderLk === 'function') renderLk(); }
 $('admIn').onclick = () => { if ($('admPw').value === ADMIN_PASSWORD){ try { sessionStorage.setItem('tt_admin','1'); } catch(e){} unlock(); } else alert('Sai mật khẩu.'); };
 $('admPw').addEventListener('keydown', e => { if (e.key === 'Enter') $('admIn').click(); });
 $('admOut').onclick = () => { location.hash = ''; };
@@ -951,6 +953,8 @@ $('admMk').onclick = () => {
   const p = new URLSearchParams(); p.set('khach', n);
   const link = location.origin + ({'26':'/tiecthanmat','28':'/nhatrai'}[$('admCa').value] || '/') + '?' + p.toString().replace(/\+/g, '%20');
   $('admLinkT').textContent = link; $('admLink').classList.add('on');
+  const ca = $('admCa').value || '27';
+  if (FB_OK && !LK.some(l => l.name.toLowerCase() === n.toLowerCase() && l.ca === ca)) addDoc(collection(db, LCOL), { name: n.slice(0, 100), ca, link, createdAt: serverTimestamp() }).catch(() => alert('Chưa lưu được link vào danh sách, link vẫn dùng bình thường.'));
   $('admCopy').onclick = function(){ const b = this; (navigator.clipboard ? navigator.clipboard.writeText(link) : Promise.reject()).then(() => { b.textContent = 'Đã chép ✓'; setTimeout(() => b.textContent = 'Sao chép', 1500); }).catch(() => prompt('Chép link:', link)); };
 };
 $('admCsv').onclick = () => {
@@ -996,7 +1000,45 @@ function renderRs(){
     x.appendChild(b); tr.append(a, t2, x); tb.appendChild(tr);
   });
 }
-if (FB_OK) onSnapshot(query(collection(db, RCOL), orderBy('createdAt', 'desc')), snap => { RS = []; snap.forEach(d => RS.push({ id: d.id, ...d.data() })); if ($('adm').classList.contains('on')) renderRs(); }, () => {});
+if (FB_OK) onSnapshot(query(collection(db, RCOL), orderBy('createdAt', 'desc')), snap => { RS = []; snap.forEach(d => RS.push({ id: d.id, ...d.data() })); if ($('adm').classList.contains('on')) { renderRs(); if (typeof renderLk === 'function') renderLk(); } }, () => {});
+// ---- Link đã tạo + lượt mở thiệp ----
+const LCOL = "links_trangthong", VCOL = "views_trangthong";
+let LK = [], VW = [];
+const norm = x => String(x || '').trim().toLowerCase();
+const CALBL = { '26': 'Tiệc thân mật 26/11', '27': 'Tiệc cưới 27/11', '28': 'Tiệc nhà trai 28/11' };
+if (FB_OK && guest) {
+  let skip = false; try { skip = sessionStorage.getItem('tt_admin') === '1' || sessionStorage.getItem('tt_view') === norm(guest) + CA; } catch(e){}
+  if (!skip && location.hash.toLowerCase() !== '#admin') addDoc(collection(db, VCOL), { invitedAs: guest.slice(0, 100), ca: CA, createdAt: serverTimestamp() }).then(() => { try { sessionStorage.setItem('tt_view', norm(guest) + CA); } catch(e){} }).catch(() => {});
+}
+function renderLk(){
+  let nRs = 0, nVw = 0;
+  const tb = $('lkRows'); tb.innerHTML = '';
+  if (!LK.length){ tb.innerHTML = '<tr><td class="muted">Chưa có link nào được lưu.</td></tr>'; $('lkSum').textContent = ''; return; }
+  LK.forEach(l => {
+    const k = norm(l.name);
+    const r = RS.find(x => norm(x.invitedAs) === k && (x.ca || '27') === l.ca);
+    const v = VW.filter(x => norm(x.invitedAs) === k && (x.ca || '27') === l.ca);
+    if (r) nRs++; if (v.length) nVw++;
+    const tr = document.createElement('tr');
+    const a = document.createElement('td'); a.innerHTML = '<b></b><div></div><div class="muted"></div>';
+    a.querySelector('b').textContent = l.name;
+    a.querySelector('div').textContent = CALBL[l.ca] || CALBL['27'];
+    a.querySelector('.muted').textContent = (r ? 'Đã xác nhận: ' + (r.attend === 'co' ? 'Đến' : 'Không đến') : 'Chưa xác nhận') + ' · ' + (v.length ? 'Đã mở ' + v.length + ' lần, lần cuối ' + fmt(v[0].createdAt) : 'Chưa mở thiệp');
+    const t = document.createElement('td'); t.className = 't'; t.textContent = fmt(l.createdAt);
+    const c = document.createElement('td'); c.style.whiteSpace = 'nowrap';
+    const cp = document.createElement('button'); cp.className = 'x'; cp.textContent = '⧉'; cp.title = 'Chép link';
+    cp.onclick = () => { (navigator.clipboard ? navigator.clipboard.writeText(l.link) : Promise.reject()).then(() => { cp.textContent = '✓'; setTimeout(() => cp.textContent = '⧉', 1500); }).catch(() => prompt('Chép link:', l.link)); };
+    const b = document.createElement('button'); b.className = 'x'; b.textContent = '×'; b.title = 'Xoá';
+    b.onclick = async () => { if (confirm('Xoá link của ' + l.name + ' khỏi danh sách?')) await deleteDoc(doc(db, LCOL, l.id)); };
+    c.append(cp, b); tr.append(a, t, c); tb.appendChild(tr);
+  });
+  $('lkSum').textContent = '· ' + LK.length + ' link · ' + nRs + ' đã xác nhận · ' + nVw + ' đã mở';
+}
+const admOn = () => $('adm').classList.contains('on') && !$('admApp').hidden;
+if (FB_OK) {
+  onSnapshot(query(collection(db, LCOL), orderBy('createdAt', 'desc')), snap => { LK = []; snap.forEach(d => LK.push({ id: d.id, ...d.data() })); if (admOn()) renderLk(); }, () => { $('lkRows').innerHTML = '<tr><td class="muted">Chưa tải được danh sách link.</td></tr>'; });
+  onSnapshot(query(collection(db, VCOL), orderBy('createdAt', 'desc')), snap => { VW = []; snap.forEach(d => VW.push(d.data())); if (admOn()) renderLk(); }, () => {});
+}
 $('rsCsv').onclick = () => {
   const rows = [['Tên', 'Tham dự', 'Tiệc', 'Lời nhắn', 'Tên trên link mời', 'Thời gian']].concat(RS.map(r => [r.name, r.attend === 'co' ? 'Đến' : 'Không đến', r.ca === '26' ? 'Tiệc thân mật 26/11 18:00' : r.ca === '28' ? 'Tiệc nhà trai 28/11 10:30' : 'Tiệc cưới 27/11 10:30', r.note || '', r.invitedAs || '', fmt(r.createdAt)]));
   const csv = '﻿' + rows.map(r => r.map(c => '"' + String(c).replace(/"/g, '""') + '"').join(',')).join('\n');
