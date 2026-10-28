@@ -363,6 +363,7 @@ body{counter-reset:pg}
 #adm td.t{color:#8a6a6e;white-space:nowrap;font-size:12px}
 #adm .x{background:none;color:#a91e33;padding:2px 6px;font-size:18px;line-height:1}
 #adm .muted{color:#8a6a6e;font-size:13px}
+.hpf{position:absolute!important;left:-9999px!important;width:1px;height:1px;overflow:hidden}
 </style>
 </head>
 <body class="locked">
@@ -632,6 +633,7 @@ body{counter-reset:pg}
       <input id="rsName" maxlength="60" required placeholder="Ví dụ: Anh Huy">
       <label>Bạn có đến được không?</label>
       <div class="rs-opts"><label><input type="radio" name="rsAtt" value="co" checked>Mình sẽ đến</label><label><input type="radio" name="rsAtt" value="khong">Tiếc quá, không đến được</label></div>
+      <div class="hpf" aria-hidden="true"><label for="rsWeb">Website</label><input id="rsWeb" name="rsWeb" type="text" tabindex="-1" autocomplete="off"></div>
       <button class="gb-btn" id="rsSend" type="submit">Gửi xác nhận</button>
       <div class="gb-msg" id="rsMsg"></div>
     </form>
@@ -657,6 +659,7 @@ body{counter-reset:pg}
       <input id="gbName" maxlength="60" required placeholder="Ví dụ: Anh Huy">
       <label for="gbWish">Lời chúc</label>
       <textarea id="gbWish" maxlength="600" required placeholder="Viết lời chúc của bạn…"></textarea>
+      <div class="hpf" aria-hidden="true"><label for="gbWeb">Website</label><input id="gbWeb" name="gbWeb" type="text" tabindex="-1" autocomplete="off"></div>
       <button class="gb-btn" id="gbSend" type="submit">Gửi lời chúc</button>
       <div class="gb-msg" id="gbMsg"></div>
     </form>
@@ -881,6 +884,8 @@ const db = FB_OK ? getFirestore(app) : null;
 const COL = "luubut_trangthong";
 const ADMIN_PASSWORD = "trangthong2026";
 const $ = id => document.getElementById(id);
+const T0 = Date.now();
+const isBot = hpId => !!$(hpId).value || (Date.now() - T0) < 4000;
 const Q = new URLSearchParams(location.search);
 const guest = (Q.get('khach') || '').trim();
 if (guest) $('gbName').value = guest;
@@ -922,6 +927,7 @@ $('gbForm').addEventListener('submit', async e => {
   e.preventDefault();
   const name = $('gbName').value.trim().slice(0, 60), wish = $('gbWish').value.trim().slice(0, 600);
   if (!name || !wish) return;
+  if (isBot('gbWeb')) { $('gbWish').value = ''; $('gbMsg').textContent = 'Cảm ơn bạn, lời chúc đã vào sổ rồi ♡'; return; }
   $('gbSend').disabled = true; $('gbMsg').textContent = 'Đang gửi…';
   try {
     if (!FB_OK) throw new Error('offline');
@@ -964,6 +970,7 @@ $('rsForm').addEventListener('submit', async e => {
   e.preventDefault();
   const name = $('rsName').value.trim().slice(0, 60), attend = document.querySelector('input[name=rsAtt]:checked').value;
   if (!name) return;
+  if (isBot('rsWeb')) { $('rsMsg').textContent = 'Cảm ơn bạn, hẹn gặp bạn trong ngày vui ♡'; return; }
   $('rsSend').disabled = true; $('rsMsg').textContent = 'Đang gửi…';
   try {
     if (!FB_OK) throw new Error('offline');
